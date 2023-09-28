@@ -54,9 +54,6 @@ async def main():
                 #print(await robot.get_activity_history())
 
         finally:
-            # Disconnect from the API.
-            logger.info("Disconnecting from the API")
-            await account.disconnect()
             time.sleep(600)
 
 if __name__ == "__main__":
