@@ -85,7 +85,7 @@ class LitterbotCollector:
                     self.waste_level.labels(robot.serial).set(robot.waste_drawer_level)
                     self.litter_level.labels(robot.serial).set(robot.litter_level)
                     self.cycle_count.labels(robot.serial).set(robot.cycle_count)
-                    self.cycle_count_after_full.labels(robot.serial).set(robot.cycle_count_after_full)
+                    self.cycle_count_after_full.labels(robot.serial).set(robot.cycles_after_drawer_full)
                     self.cycle_capacity.labels(robot.serial).set(robot.cycle_capacity)
                     self.weight.labels(robot.serial).observe(robot.pet_weight)
                     self.night_light_level.labels(robot.serial).set(robot.night_light_level)
