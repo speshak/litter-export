@@ -28,11 +28,15 @@ class LitterbotCollector:
         self.robot_info = Info('litterbot_info', 'Robot info', ['serial'])
         self.online_enum = Enum('litterbot_online_state', 'Robot online state',
                            ['serial'], states=['online', 'offline'])
+        self.power_status = Enum('litterbot_power_state', 'Robot power state',
+                           ['serial'], states=['AC', 'DC', 'NC'])
         self.litter_level = Gauge('litterbot_litter_level', 'Level of litter',
                              ['serial'])
         self.waste_level = Gauge('litterbot_waste_level', 'Level of waste', ['serial'])
         self.cycle_count = Gauge('litterbot_cycle_count',
                             'Number of cycles since last reset', ['serial'])
+        self.cycle_count_after_full = Gauge('litterbot_cycle_after_full_count',
+                            'Number of cycles since the drawer was reported as full', ['serial'])
         self.cycle_capacity = Gauge('litterbot_cycle_capacity',
                             'Predicted number of cycles before full', ['serial'])
         self.weight = Histogram('litterbot_weight', 'Weight of pet(s)', ['serial'],
@@ -62,7 +66,9 @@ class LitterbotCollector:
     async def collect_metrics(self):
         while True:
             try:
-                # Print robots associated with account.
+                # Refresh the robot data
+                await self.account.refresh_robots()
+
                 logger.info(f"Found {len(self.account.robots)} robots")
                 for robot in self.account.robots:
                     logger.info(f"Gather metrics for robot '{robot.name}' "
@@ -79,9 +85,11 @@ class LitterbotCollector:
                     self.waste_level.labels(robot.serial).set(robot.waste_drawer_level)
                     self.litter_level.labels(robot.serial).set(robot.litter_level)
                     self.cycle_count.labels(robot.serial).set(robot.cycle_count)
+                    self.cycle_count_after_full.labels(robot.serial).set(robot.cycle_count_after_full)
                     self.cycle_capacity.labels(robot.serial).set(robot.cycle_capacity)
                     self.weight.labels(robot.serial).observe(robot.pet_weight)
                     self.night_light_level.labels(robot.serial).set(robot.night_light_level)
+                    self.power_status.labels(robot.serial).state(robot.power_status)
 
             finally:
                 logger.info(f"Sleeping metrics gathering for 10 minutes")
@@ -95,6 +103,9 @@ class LitterbotCollector:
         """
         while True:
             try:
+                # Refresh the robot data
+                await self.account.refresh_robots()
+
                 for robot in self.account.robots:
                     logger.info(f"Gather insights for robot '{robot.name}' "
                                 f"({robot.serial})")
