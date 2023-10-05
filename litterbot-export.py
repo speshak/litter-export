@@ -66,8 +66,10 @@ class LitterbotCollector:
     async def collect_metrics(self):
         while True:
             try:
-                # Refresh the robot data
-                await self.account.refresh_robots()
+                # Refresh isn't implemented for LitterRobot4, so instead we
+                # just reload the robots. If it ever gets implemented, we can
+                # switch to refresh_robots()
+                await self.account.load_robots()
 
                 logger.info(f"Found {len(self.account.robots)} robots")
                 for robot in self.account.robots:
@@ -103,8 +105,10 @@ class LitterbotCollector:
         """
         while True:
             try:
-                # Refresh the robot data
-                await self.account.refresh_robots()
+                # Refresh isn't implemented for LitterRobot4, so instead we
+                # just reload the robots. If it ever gets implemented, we can
+                # switch to refresh_robots()
+                await self.account.load_robots()
 
                 for robot in self.account.robots:
                     logger.info(f"Gather insights for robot '{robot.name}' "
