@@ -1,4 +1,4 @@
-FROM python:3.11.5-alpine
+FROM python:3.13.0-alpine
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir \
